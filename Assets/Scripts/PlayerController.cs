@@ -22,7 +22,14 @@ public class PlayerController : MonoBehaviour
         _moveDirections.x = _input.x;
         _moveDirections.x *= walkSpeed;
 
-        //_moveDirections.y -= gravity * Time.deltaTime;
+        if (_characterController.below)
+        {
+
+        }
+        else
+        {
+            _moveDirections.y -= gravity * Time.deltaTime;
+        }
 
         _characterController.Move(_moveDirections * Time.deltaTime);
     }
