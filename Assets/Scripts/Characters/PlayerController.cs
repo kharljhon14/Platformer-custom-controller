@@ -33,21 +33,24 @@ public class PlayerController : MonoBehaviour
 
         if (_characterController.below)
         {
+            _moveDirections.y = 0f;
+            isJumping = false;
+
             if (_startJump)
             {
                 _startJump = false;
                 _moveDirections.y = jumpSpeed;
                 isJumping = true;
+                _characterController.DisableGroundCheck();
             }
         }
-
         else // In the air
         {
             if (_releaseJump)
             {
                 _releaseJump = false;
-                
-                if(_moveDirections.y > 0)
+
+                if (_moveDirections.y > 0)
                 {
                     _moveDirections.y *= .5f;
                 }
@@ -71,7 +74,6 @@ public class PlayerController : MonoBehaviour
         {
             _startJump = true;
         }
-        
         else if (context.canceled)
         {
             _releaseJump = true;
