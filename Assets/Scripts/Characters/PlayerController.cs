@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float doubleJumpSpeed = 10f;
     public float xWallJumpSpeed = 20f;
     public float yWallJumpSpeed = 10f;
+    public float wallAmountSpeed = 8f;
 
     //Player abilities
     [Header("Player Abilities")]
@@ -20,6 +21,8 @@ public class PlayerController : MonoBehaviour
     public bool canTripleJump;
     public bool canWallJump;
     public bool canJumpAfterWallJump;
+    public bool canWallRun;
+    public bool canMultipleWallRun;
 
     //Input flags
     private bool _startJump;
@@ -31,10 +34,13 @@ public class PlayerController : MonoBehaviour
     public bool isDoubleJumping;
     public bool isTripleJumping;
     public bool isWallJumping;
+    public bool isWallRunning;
 
     private Vector2 _input;
     private Vector2 _moveDirections;
     private CharacterController2D _characterController;
+
+    private bool _ableToWallRun = true;
 
     private void Start()
     {
@@ -75,6 +81,7 @@ public class PlayerController : MonoBehaviour
                 _moveDirections.y = jumpSpeed;
                 isJumping = true;
                 _characterController.DisableGroundCheck();
+                _ableToWallRun = true;
             }
         }
         else // In the air
@@ -90,7 +97,7 @@ public class PlayerController : MonoBehaviour
             }
 
             //Pressed jump button air
-            if (_startJump)
+            if (_startJump == true)
             {
                 //Triple Jump
                 if (canTripleJump == true && (_characterController.left == false) && (_characterController.right == false))
@@ -140,6 +147,35 @@ public class PlayerController : MonoBehaviour
                 _startJump = false;
             }
 
+            //Wall Running
+            if (canWallRun == true && (_characterController.left == true || _characterController.right == true))
+            {
+                if(_input.y > 0f &&  _ableToWallRun == true)
+                {
+                    _moveDirections.y = wallAmountSpeed;
+
+                    if(_characterController.left == true)
+                    {
+                        transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                    }
+                    else if(_characterController.right == true)
+                    {
+                        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+                    }
+
+                    StartCoroutine("WallRunWaiter");
+                }
+            }
+            else
+            {
+                if(canMultipleWallRun == true)
+                {
+                    StopCoroutine("WallRunWaiter");
+                    _ableToWallRun = true;
+                    isWallRunning = false;
+                }
+            }
+
             GravityCalculations();
         }
         _characterController.Move(_moveDirections * Time.deltaTime);
@@ -184,5 +220,17 @@ public class PlayerController : MonoBehaviour
         isWallJumping = true;
         yield return new WaitForSeconds(.4f);
         isWallJumping = false;
+    }
+
+    private IEnumerator WallRunWaiter()
+    {
+        isWallRunning = true;
+        yield return new WaitForSeconds(.5f);
+        isWallRunning = false;
+
+        if(isWallJumping == false)
+        {
+            _ableToWallRun = false;
+        }
     }
 }
