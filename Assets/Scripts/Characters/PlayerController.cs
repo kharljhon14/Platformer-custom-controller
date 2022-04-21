@@ -31,6 +31,16 @@ public class PlayerController : MonoBehaviour
         _moveDirections.x = _input.x;
         _moveDirections.x *= walkSpeed;
 
+        if(_moveDirections.x < 0f)
+        {
+            transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        }
+        else if(_moveDirections.x > 0f)
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
+        }
+
         if (_characterController.below)
         {
             _moveDirections.y = 0f;
@@ -56,10 +66,22 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            _moveDirections.y -= gravity * Time.deltaTime;
+            GravityCalculations();
         }
 
         _characterController.Move(_moveDirections * Time.deltaTime);
+    }
+
+    private void GravityCalculations()
+    {
+
+        if(_moveDirections.y > 0f && _characterController.above)
+        {
+            _moveDirections.y = 0f;
+        }
+
+        _moveDirections.y -= gravity * Time.deltaTime;
+
     }
 
     //Input Methods
@@ -73,10 +95,13 @@ public class PlayerController : MonoBehaviour
         if (context.started)
         {
             _startJump = true;
+            _releaseJump = false;
+
         }
         else if (context.canceled)
         {
             _releaseJump = true;
+            _startJump = false;
         }
     }
 }
