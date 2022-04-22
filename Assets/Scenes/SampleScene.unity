@@ -636,8 +636,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363669652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.19, y: 7.2331, z: 1.318946}
-  m_LocalScale: {x: 0.3743819, y: 16.048702, z: 1}
+  m_LocalPosition: {x: -13.8765, y: 7.2331, z: 1.318946}
+  m_LocalScale: {x: 1.0013218, y: 16.048702, z: 1}
   m_Children: []
   m_Father: {fileID: 148072513}
   m_RootOrder: 19
@@ -2127,17 +2127,20 @@ MonoBehaviour:
   xWallJumpSpeed: 10
   yWallJumpSpeed: 15
   wallAmountSpeed: 8
-  canDoubleJump: 1
+  wallSlideSpeed: 1
+  canDoubleJump: 0
   canTripleJump: 0
   canWallJump: 1
-  canJumpAfterWallJump: 1
-  canWallRun: 1
+  canJumpAfterWallJump: 0
+  canWallRun: 0
   canMultipleWallRun: 0
+  canWallSlide: 1
   isJumping: 0
   isDoubleJumping: 0
   isTripleJumping: 0
   isWallJumping: 0
   isWallRunning: 0
+  isWallSliding: 0
 --- !u!114 &1284878006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2162,6 +2165,7 @@ MonoBehaviour:
   above: 0
   groundType: 0
   hitGroundThisFrame: 0
+  hitWallThisFrame: 0
 --- !u!1 &1296081081
 GameObject:
   m_ObjectHideFlags: 0

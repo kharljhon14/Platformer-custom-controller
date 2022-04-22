@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public float xWallJumpSpeed = 20f;
     public float yWallJumpSpeed = 10f;
     public float wallAmountSpeed = 8f;
+    public float wallSlideSpeed = .1f;
 
     //Player abilities
     [Header("Player Abilities")]
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public bool canJumpAfterWallJump;
     public bool canWallRun;
     public bool canMultipleWallRun;
+    public bool canWallSlide;
 
     //Input flags
     private bool _startJump;
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour
     public bool isTripleJumping;
     public bool isWallJumping;
     public bool isWallRunning;
+    public bool isWallSliding;
 
     private Vector2 _input;
     private Vector2 _moveDirections;
@@ -137,7 +140,7 @@ public class PlayerController : MonoBehaviour
                     //isWallJumping = true;
                     StartCoroutine("WallJumpWaiter");
 
-                    if(canJumpAfterWallJump == true)
+                    if (canJumpAfterWallJump == true)
                     {
                         isDoubleJumping = false;
                         isTripleJumping = false;
@@ -150,15 +153,15 @@ public class PlayerController : MonoBehaviour
             //Wall Running
             if (canWallRun == true && (_characterController.left == true || _characterController.right == true))
             {
-                if(_input.y > 0f &&  _ableToWallRun == true)
+                if (_input.y > 0f && _ableToWallRun == true)
                 {
                     _moveDirections.y = wallAmountSpeed;
 
-                    if(_characterController.left == true)
+                    if (_characterController.left == true)
                     {
                         transform.rotation = Quaternion.Euler(0f, 180f, 0f);
                     }
-                    else if(_characterController.right == true)
+                    else if (_characterController.right == true)
                     {
                         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
                     }
@@ -168,7 +171,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if(canMultipleWallRun == true)
+                if (canMultipleWallRun == true)
                 {
                     StopCoroutine("WallRunWaiter");
                     _ableToWallRun = true;
@@ -189,8 +192,26 @@ public class PlayerController : MonoBehaviour
             _moveDirections.y = 0f;
         }
 
-        _moveDirections.y -= gravity * Time.deltaTime;
+        if (canWallSlide && (_characterController.left == true || _characterController.right == true))
+        {
+            if (_characterController.hitGroundThisFrame == true)
+            {
+                _moveDirections.y = 0f;
+            }
 
+            if (_moveDirections.y <= 0f)
+            {
+                _moveDirections.y -= (gravity * wallSlideSpeed * Time.deltaTime);
+            }
+            else
+            {
+                _moveDirections.y -= gravity * Time.deltaTime;
+            }
+        }
+        else
+        {
+            _moveDirections.y -= gravity * Time.deltaTime;
+        }
     }
 
     //Input Methods
@@ -228,7 +249,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         isWallRunning = false;
 
-        if(isWallJumping == false)
+        if (isWallJumping == false)
         {
             _ableToWallRun = false;
         }

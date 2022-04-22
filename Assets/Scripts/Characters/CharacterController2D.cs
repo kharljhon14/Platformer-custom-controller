@@ -20,6 +20,7 @@ public class CharacterController2D : MonoBehaviour
 
     public GroundType groundType;
     public bool hitGroundThisFrame;
+    public bool hitWallThisFrame;
 
     private Vector2 _moveAmount;
     private Vector2 _currentPosition;
@@ -37,6 +38,7 @@ public class CharacterController2D : MonoBehaviour
     private float _slopeAngle;
 
     private bool _inAirLastFrame;
+    private bool _noSideCollisionLastFrame;
 
     private void Awake()
     {
@@ -46,8 +48,9 @@ public class CharacterController2D : MonoBehaviour
 
     private void Update()
     {
-
         _inAirLastFrame = !below;
+
+        _noSideCollisionLastFrame = (right == false && left == false);
 
         _lastPosition = _rigidbody2d.position;
 
@@ -80,6 +83,15 @@ public class CharacterController2D : MonoBehaviour
         else
         {
             hitGroundThisFrame = false;
+        }
+
+        if((right == true || left == true) && _noSideCollisionLastFrame == true)
+        {
+            hitWallThisFrame = true;
+        }
+        else
+        {
+            hitWallThisFrame = false;
         }
     }
 
@@ -157,7 +169,7 @@ public class CharacterController2D : MonoBehaviour
 
     private void CheckGrounded()
     {
-        RaycastHit2D hit = Physics2D.CapsuleCast(_capsuleCollider2d.bounds.center, _capsuleCollider2d.bounds.size, CapsuleDirection2D.Vertical, 
+        RaycastHit2D hit = Physics2D.CapsuleCast(_capsuleCollider2d.bounds.center, _capsuleCollider2d.bounds.size, CapsuleDirection2D.Vertical,
             0f, Vector2.down, raycastDistance, layerMask);
 
         if (hit.collider)
@@ -167,7 +179,7 @@ public class CharacterController2D : MonoBehaviour
             _slopeNormal = hit.normal;
             _slopeAngle = Vector2.SignedAngle(_slopeNormal, Vector2.up);
 
-            if(_slopeAngle > slopeAngleLimit || _slopeAngle < -slopeAngleLimit)
+            if (_slopeAngle > slopeAngleLimit || _slopeAngle < -slopeAngleLimit)
             {
                 below = false;
             }
