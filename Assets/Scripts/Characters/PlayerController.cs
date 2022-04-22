@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     //Player properties
     [Header("Player Properties")]
     public float walkSpeed = 10f;
+    public float creepSpeed = 5f;
     public float gravity = 20f;
     public float jumpSpeed = 15f;
     public float doubleJumpSpeed = 10f;
@@ -38,16 +39,29 @@ public class PlayerController : MonoBehaviour
     public bool isWallJumping;
     public bool isWallRunning;
     public bool isWallSliding;
+    public bool isDucking;
+    public bool isCreeping;
 
     private Vector2 _input;
     private Vector2 _moveDirections;
     private CharacterController2D _characterController;
+
+    private CapsuleCollider2D _capsuleCollider2D;
+    private Vector2 _originalColliderSize;
+
+    //Remove later when not needed
+    private SpriteRenderer _spriteRenderer;
 
     private bool _ableToWallRun = true;
 
     private void Start()
     {
         _characterController = gameObject.GetComponent<CharacterController2D>();
+        _capsuleCollider2D = gameObject.GetComponent<CapsuleCollider2D>();
+        _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+
+        _originalColliderSize = _capsuleCollider2D.size;
+
     }
 
     private void Update()
@@ -78,6 +92,7 @@ public class PlayerController : MonoBehaviour
             isTripleJumping = false;
             isWallJumping = false;
 
+            //Jumping
             if (_startJump == true)
             {
                 _startJump = false;
@@ -86,6 +101,32 @@ public class PlayerController : MonoBehaviour
                 _characterController.DisableGroundCheck();
                 _ableToWallRun = true;
             }
+
+            //Ducking and creeping
+            if(_input.y < 0f)
+            {
+                if(isDucking == false && isCreeping == false)
+                {
+                    _capsuleCollider2D.size = new Vector2(_capsuleCollider2D.size.x, _capsuleCollider2D.size.y / 2);
+                    transform.position = new Vector2(transform.position.x, transform.position.y - (_originalColliderSize.y / 4));
+                    _spriteRenderer.sprite = Resources.Load<Sprite>("_Crouch");
+                    isDucking = true;
+                }
+            }
+            else
+            {
+                if(isDucking == true || isCreeping == true)
+                {
+                    _capsuleCollider2D.size = _originalColliderSize;
+                    transform.position = new Vector2(transform.position.x, transform.position.y + (_originalColliderSize.y / 4));
+                    _spriteRenderer.sprite = Resources.Load<Sprite>("_idle");
+                    isCreeping = false;
+                    isDucking = false;
+
+                }
+            }
+     
+
         }
         else // In the air
         {

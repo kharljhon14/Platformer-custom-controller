@@ -636,7 +636,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363669652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.8765, y: 7.2331, z: 1.318946}
+  m_LocalPosition: {x: -12.8765, y: 7.2331, z: 1.318946}
   m_LocalScale: {x: 1.0013218, y: 16.048702, z: 1}
   m_Children: []
   m_Father: {fileID: 148072513}
@@ -1981,7 +1981,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -6367560908665664636, guid: 8b2245deaf2a1964db625c7ff816dc52, type: 3}
+  m_Sprite: {fileID: 3204480812468917802, guid: 2bc70e7fd2ae2174494a26c12e308f72, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2040,8 +2040,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.003945738, y: -0.12362802}
-  m_Size: {x: 0.65540594, y: 0.75274396}
+  m_Offset: {x: -0.003945738, y: -0.010106921}
+  m_Size: {x: 0.65540594, y: 1.1693072}
   m_Direction: 0
 --- !u!114 &1284878004
 MonoBehaviour:
@@ -2121,13 +2121,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 8
+  creepSpeed: 6
   gravity: 50
   jumpSpeed: 15
   doubleJumpSpeed: 10
   xWallJumpSpeed: 10
   yWallJumpSpeed: 15
   wallAmountSpeed: 8
-  wallSlideSpeed: 1
+  wallSlideSpeed: 0.2
   canDoubleJump: 0
   canTripleJump: 0
   canWallJump: 1
@@ -2141,6 +2142,8 @@ MonoBehaviour:
   isWallJumping: 0
   isWallRunning: 0
   isWallSliding: 0
+  isDucking: 0
+  isCreeping: 0
 --- !u!114 &1284878006
 MonoBehaviour:
   m_ObjectHideFlags: 0
