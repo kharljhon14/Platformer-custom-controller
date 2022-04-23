@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public float yWallJumpSpeed = 10f;
     public float wallAmountSpeed = 8f;
     public float wallSlideSpeed = .1f;
+    public float glideTime = 2f;
+    public float glideDescentAmount = 2f;
 
     //Player abilities
     [Header("Player Abilities")]
@@ -26,6 +28,9 @@ public class PlayerController : MonoBehaviour
     public bool canWallRun;
     public bool canMultipleWallRun;
     public bool canWallSlide;
+    public bool canGlide;
+    public bool canGlideAfterWallContact;
+    
 
     //Input flags
     private bool _startJump;
@@ -41,6 +46,7 @@ public class PlayerController : MonoBehaviour
     public bool isWallSliding;
     public bool isDucking;
     public bool isCreeping;
+    public bool isGliding;
 
     private Vector2 _input;
     private Vector2 _moveDirections;
@@ -53,6 +59,9 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
 
     private bool _ableToWallRun = true;
+
+    private float _currentGlideTime;
+    private bool _startGlide;
 
     private void Start()
     {
@@ -92,6 +101,7 @@ public class PlayerController : MonoBehaviour
             isTripleJumping = false;
             isWallJumping = false;
             isWallSliding = false;
+            _currentGlideTime = glideTime;
 
             //Jumping
             if (_startJump == true)
@@ -241,18 +251,32 @@ public class PlayerController : MonoBehaviour
             }
 
             GravityCalculations();
+
+            //Can glide after wall contact
+            if ((_characterController.left == true || _characterController.right == true) && canWallRun == true)
+            {
+                if(canGlideAfterWallContact == true)
+                {
+                    _currentGlideTime = glideTime;
+                }
+                else
+                {
+                    _currentGlideTime = 0f;
+                }
+            }
         }
         _characterController.Move(_moveDirections * Time.deltaTime);
     }
 
     private void GravityCalculations()
     {
-
+        //Detects if something above the player
         if (_moveDirections.y > 0f && _characterController.above)
         {
             _moveDirections.y = 0f;
         }
 
+        //Apply wallslide adjustmet
         if (canWallSlide && (_characterController.left == true || _characterController.right == true))
         {
             if (_characterController.hitGroundThisFrame == true)
@@ -270,7 +294,28 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-        else
+        else if (canGlide == true && _input.y > 0f &&  _moveDirections.y < 0.1f) //Glide adjustment
+        {
+            if(_currentGlideTime > 0f)
+            {
+                isGliding = true;
+
+                if(_startGlide == true)
+                {
+                    _moveDirections.y = 0f;
+                    _startGlide = false;
+                }
+
+                _moveDirections.y -= glideDescentAmount * Time.deltaTime;
+                _currentGlideTime -= Time.deltaTime;
+            }
+            else
+            {
+                isGliding = false;
+                _moveDirections.y -= gravity * Time.deltaTime;
+            }
+        }
+        else //Regular gravity
         {
             _moveDirections.y -= gravity * Time.deltaTime;
         }
