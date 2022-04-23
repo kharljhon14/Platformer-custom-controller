@@ -578,8 +578,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 336694628}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.383, y: -2.8032508, z: 1.318946}
-  m_LocalScale: {x: 66.65566, y: 1, z: 1}
+  m_LocalPosition: {x: -15.383, y: -4.3424, z: 1.318946}
+  m_LocalScale: {x: 66.65566, y: 4.0783, z: 1}
   m_Children: []
   m_Father: {fileID: 148072513}
   m_RootOrder: 0
@@ -916,7 +916,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -940,7 +940,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0009717941, y: 0.05962181, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2040,8 +2040,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.003945738, y: -0.010106921}
-  m_Size: {x: 0.65540594, y: 1.1693072}
+  m_Offset: {x: 0.0067109466, y: -0.0109449625}
+  m_Size: {x: 0.5666225, y: 1.1852918}
   m_Direction: 0
 --- !u!114 &1284878004
 MonoBehaviour:
@@ -2156,7 +2156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139283e2f35875446876a89cc2e4a6ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  raycastDistance: 0.1
+  raycastDistance: 0.2
   layerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -2550,7 +2550,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1284878001}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 8
+    OrthographicSize: 6
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0

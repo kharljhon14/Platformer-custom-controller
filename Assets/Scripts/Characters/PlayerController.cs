@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour
             isDoubleJumping = false;
             isTripleJumping = false;
             isWallJumping = false;
+            isWallSliding = false;
 
             //Jumping
             if (_startJump == true)
@@ -103,9 +104,9 @@ public class PlayerController : MonoBehaviour
             }
 
             //Ducking and creeping
-            if(_input.y < 0f)
+            if (_input.y < 0f)
             {
-                if(isDucking == false && isCreeping == false)
+                if (isDucking == false && isCreeping == false)
                 {
                     _capsuleCollider2D.size = new Vector2(_capsuleCollider2D.size.x, _capsuleCollider2D.size.y / 2);
                     transform.position = new Vector2(transform.position.x, transform.position.y - (_originalColliderSize.y / 4));
@@ -115,21 +116,40 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if(isDucking == true || isCreeping == true)
+                if (isDucking == true || isCreeping == true)
                 {
-                    _capsuleCollider2D.size = _originalColliderSize;
-                    transform.position = new Vector2(transform.position.x, transform.position.y + (_originalColliderSize.y / 4));
-                    _spriteRenderer.sprite = Resources.Load<Sprite>("_idle");
-                    isCreeping = false;
-                    isDucking = false;
+                    RaycastHit2D hitCeiling = Physics2D.CapsuleCast(_capsuleCollider2D.bounds.center, _capsuleCollider2D.size, //Change to transform.localscale
+                        CapsuleDirection2D.Vertical, 0f, Vector2.up, _originalColliderSize.y / 2, _characterController.layerMask);
 
+                    if (!hitCeiling.collider)
+                    {
+                        _capsuleCollider2D.size = _originalColliderSize;
+                        transform.position = new Vector2(transform.position.x, transform.position.y + (_originalColliderSize.y / 4));
+                        _spriteRenderer.sprite = Resources.Load<Sprite>("_idle");
+                        isCreeping = false;
+                        isDucking = false;
+                    }
                 }
             }
-     
+
+            if (isDucking == true && _moveDirections.x != 0)
+            {
+                isCreeping = true;
+            }
+            else
+            {
+                isCreeping = false;
+            }
+
 
         }
         else // In the air
         {
+            if ((isDucking == true || isCreeping == true) && _moveDirections.y > 0f)
+            {
+                StartCoroutine("ClearDuckingState");
+            }
+
             if (_releaseJump == true)
             {
                 _releaseJump = false;
@@ -239,15 +259,16 @@ public class PlayerController : MonoBehaviour
             {
                 _moveDirections.y = 0f;
             }
-
             if (_moveDirections.y <= 0f)
             {
                 _moveDirections.y -= (gravity * wallSlideSpeed * Time.deltaTime);
+                isWallSliding = true;
             }
             else
             {
                 _moveDirections.y -= gravity * Time.deltaTime;
             }
+
         }
         else
         {
@@ -294,5 +315,22 @@ public class PlayerController : MonoBehaviour
         {
             _ableToWallRun = false;
         }
+    }
+
+    private IEnumerator ClearDuckingState()
+    {
+        yield return new WaitForSeconds(0.05f);
+
+        RaycastHit2D hitCeiling = Physics2D.CapsuleCast(_capsuleCollider2D.bounds.center, _capsuleCollider2D.size, //Change to transform.localscale
+            CapsuleDirection2D.Vertical, 0f, Vector2.up, _originalColliderSize.y / 2, _characterController.layerMask);
+
+        if (!hitCeiling.collider)
+        {
+            _capsuleCollider2D.size = _originalColliderSize;
+            //transform.position = new Vector2(transform.position.x, transform.position.y + (_originalColliderSize.y / 4));
+            _spriteRenderer.sprite = Resources.Load<Sprite>("_idle");
+            isCreeping = false;
+            isDucking = false;
+        }    
     }
 }
