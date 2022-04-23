@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GlobalTypes;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -18,6 +19,8 @@ public class PlayerController : MonoBehaviour
     public float wallSlideSpeed = .1f;
     public float glideTime = 2f;
     public float glideDescentAmount = 2f;
+    public float powerJumpSpeed = 40f;
+    public float powerJumpWaitTime = 1.5f;
 
     //Player abilities
     [Header("Player Abilities")]
@@ -30,7 +33,7 @@ public class PlayerController : MonoBehaviour
     public bool canWallSlide;
     public bool canGlide;
     public bool canGlideAfterWallContact;
-    
+    public bool canPowerJump;
 
     //Input flags
     private bool _startJump;
@@ -47,6 +50,7 @@ public class PlayerController : MonoBehaviour
     public bool isDucking;
     public bool isCreeping;
     public bool isGliding;
+    public bool isPowerJumping;
 
     private Vector2 _input;
     private Vector2 _moveDirections;
@@ -63,6 +67,8 @@ public class PlayerController : MonoBehaviour
     private float _currentGlideTime;
     private bool _startGlide;
 
+    private float _powerJumpTimer;
+
     private void Start()
     {
         _characterController = gameObject.GetComponent<CharacterController2D>();
@@ -70,7 +76,6 @@ public class PlayerController : MonoBehaviour
         _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
 
         _originalColliderSize = _capsuleCollider2D.size;
-
     }
 
     private void Update()
@@ -107,7 +112,18 @@ public class PlayerController : MonoBehaviour
             if (_startJump == true)
             {
                 _startJump = false;
-                _moveDirections.y = jumpSpeed;
+
+                if (canPowerJump == true && isDucking == true && _characterController.groundType != GroundType.OneWayPlatform && (_powerJumpTimer > powerJumpWaitTime))
+                {
+                    _moveDirections.y = powerJumpSpeed;
+                    StartCoroutine("PowerJumpWaiter");
+                }
+                else
+                {
+                    _moveDirections.y = jumpSpeed;
+
+                }
+
                 isJumping = true;
                 _characterController.DisableGroundCheck();
                 _ableToWallRun = true;
@@ -123,6 +139,8 @@ public class PlayerController : MonoBehaviour
                     _spriteRenderer.sprite = Resources.Load<Sprite>("_Crouch");
                     isDucking = true;
                 }
+
+                _powerJumpTimer += Time.deltaTime;
             }
             else
             {
@@ -140,11 +158,14 @@ public class PlayerController : MonoBehaviour
                         isDucking = false;
                     }
                 }
+
+                _powerJumpTimer = 0f;
             }
 
             if (isDucking == true && _moveDirections.x != 0)
             {
                 isCreeping = true;
+                _powerJumpTimer = 0f;
             }
             else
             {
@@ -159,6 +180,9 @@ public class PlayerController : MonoBehaviour
             {
                 StartCoroutine("ClearDuckingState");
             }
+
+            //Clear jump timer
+            _powerJumpTimer = 0f;
 
             if (_releaseJump == true)
             {
@@ -255,7 +279,7 @@ public class PlayerController : MonoBehaviour
             //Can glide after wall contact
             if ((_characterController.left == true || _characterController.right == true) && canWallRun == true)
             {
-                if(canGlideAfterWallContact == true)
+                if (canGlideAfterWallContact == true)
                 {
                     _currentGlideTime = glideTime;
                 }
@@ -294,13 +318,13 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-        else if (canGlide == true && _input.y > 0f &&  _moveDirections.y < 0.1f) //Glide adjustment
+        else if (canGlide == true && _input.y > 0f && _moveDirections.y < 0.1f) //Glide adjustment
         {
-            if(_currentGlideTime > 0f)
+            if (_currentGlideTime > 0f)
             {
                 isGliding = true;
 
-                if(_startGlide == true)
+                if (_startGlide == true)
                 {
                     _moveDirections.y = 0f;
                     _startGlide = false;
@@ -376,6 +400,14 @@ public class PlayerController : MonoBehaviour
             _spriteRenderer.sprite = Resources.Load<Sprite>("_idle");
             isCreeping = false;
             isDucking = false;
-        }    
+        }
+    }
+
+    private IEnumerator PowerJumpWaiter()
+    {
+        isPowerJumping = true;
+        yield return new WaitForSeconds(0.5f); // tweak 
+        isPowerJumping = false;
+
     }
 }

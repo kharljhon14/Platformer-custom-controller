@@ -2235,13 +2235,15 @@ MonoBehaviour:
   creepSpeed: 6
   gravity: 50
   jumpSpeed: 15
-  doubleJumpSpeed: 10
+  doubleJumpSpeed: 13
   xWallJumpSpeed: 10
   yWallJumpSpeed: 15
   wallAmountSpeed: 8
   wallSlideSpeed: 0.2
   glideTime: 1
   glideDescentAmount: 2
+  powerJumpSpeed: 25
+  powerJumpWaitTime: 1.5
   canDoubleJump: 0
   canTripleJump: 0
   canWallJump: 1
@@ -2251,6 +2253,7 @@ MonoBehaviour:
   canWallSlide: 1
   canGlide: 1
   canGlideAfterWallContact: 0
+  canPowerJump: 1
   isJumping: 0
   isDoubleJumping: 0
   isTripleJumping: 0
@@ -2260,6 +2263,7 @@ MonoBehaviour:
   isDucking: 0
   isCreeping: 0
   isGliding: 0
+  isPowerJumping: 0
 --- !u!114 &1284878006
 MonoBehaviour:
   m_ObjectHideFlags: 0
