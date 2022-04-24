@@ -2214,6 +2214,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: de6a3abb-5a59-4090-b398-f3e837d8b86e
     m_ActionName: Player/Jump[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1284878005}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnDash
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 5113fc8a-4715-45c9-8b9d-c19e7eabd2cd
+    m_ActionName: Player/Dash[/Keyboard/leftShift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -2244,6 +2260,9 @@ MonoBehaviour:
   glideDescentAmount: 2
   powerJumpSpeed: 25
   powerJumpWaitTime: 1.5
+  dashSpeed: 20
+  dashTime: 0.15
+  dashCooldownTime: 2
   canDoubleJump: 0
   canTripleJump: 0
   canWallJump: 1
@@ -2254,6 +2273,8 @@ MonoBehaviour:
   canGlide: 1
   canGlideAfterWallContact: 0
   canPowerJump: 1
+  canGroundDash: 1
+  canAirDash: 1
   isJumping: 0
   isDoubleJumping: 0
   isTripleJumping: 0
@@ -2264,6 +2285,7 @@ MonoBehaviour:
   isCreeping: 0
   isGliding: 0
   isPowerJumping: 0
+  isDashing: 0
 --- !u!114 &1284878006
 MonoBehaviour:
   m_ObjectHideFlags: 0
