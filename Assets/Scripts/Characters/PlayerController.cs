@@ -371,7 +371,7 @@ public class PlayerController : MonoBehaviour
                 _moveDirections.y -= gravity * Time.deltaTime;
             }
         }
-        else //Regular gravity
+        else if(isDashing == false) //Regular gravity
         {
             _moveDirections.y -= gravity * Time.deltaTime;
         }
