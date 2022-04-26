@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyDeadzones()
     {
-        if(_input.x > -deadzoneValue && _input.x < deadzoneValue)
+        if (_input.x > -deadzoneValue && _input.x < deadzoneValue)
         {
             _input.x = 0f;
         }
@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
                 }
                 _moveDirections.y = 0f;
             }
-            else if(isCreeping == true)
+            else if (isCreeping == true)
             {
                 _moveDirections.x *= creepSpeed;
             }
@@ -237,6 +237,10 @@ public class PlayerController : MonoBehaviour
             {
                 _moveDirections.y = powerJumpSpeed;
                 StartCoroutine("PowerJumpWaiter");
+            }
+            else if (isDucking == true && _characterController.groundType == GroundType.OneWayPlatform)//Check if we are in a oneway platform
+            {
+                StartCoroutine(DisableOneWayPlatform(true));
             }
             else
             {
@@ -396,7 +400,14 @@ public class PlayerController : MonoBehaviour
         //Detects if something above the player
         if (_moveDirections.y > 0f && _characterController.above)
         {
-            _moveDirections.y = 0f;
+            if (_characterController.ceilingType == GroundType.OneWayPlatform)
+            {
+                StartCoroutine(DisableOneWayPlatform(false));
+            }
+            else
+            {
+                _moveDirections.y = 0f;
+            }
         }
 
         //Apply wallslide adjustmet
@@ -546,6 +557,53 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(dashTime);
         isDashing = false;
         _dashTimer = dashCooldownTime;
+    }
+
+    private IEnumerator DisableOneWayPlatform(bool checkBelow)
+    {
+        bool originalCanGroundSlam = canGroundSlam;
+        GameObject tempOneWayPlatform = null;
+
+        if (checkBelow == true)
+        {
+            Vector2 raycastBelow = transform.position - new Vector3(0f, _capsuleCollider2D.size.y * .5f);
+            RaycastHit2D hit = Physics2D.Raycast(raycastBelow, Vector2.down, _characterController.raycastDistance, _characterController.layerMask);
+
+            Debug.DrawRay(raycastBelow, Vector2.down * _characterController.raycastDistance);
+
+            if (hit.collider)
+            {
+                tempOneWayPlatform = hit.collider.gameObject;
+            }
+        }
+        else
+        {
+            Vector2 raycastAbove = transform.position + new Vector3(0f, _capsuleCollider2D.size.y * .5f);
+            RaycastHit2D hitAbove = Physics2D.Raycast(raycastAbove, Vector2.up, _characterController.raycastDistance, _characterController.layerMask);
+
+            Debug.DrawRay(raycastAbove, Vector2.up * _characterController.raycastDistance, Color.red);
+
+            if (hitAbove.collider)
+            {
+                tempOneWayPlatform = hitAbove.collider.gameObject;
+            }
+            Debug.Log(hitAbove.collider);
+
+        }
+
+        if (tempOneWayPlatform != null)
+        {
+            tempOneWayPlatform.GetComponent<EdgeCollider2D>().enabled = false;
+            canGroundSlam = false;
+        }
+
+        yield return new WaitForSeconds(.25f);
+
+        if (tempOneWayPlatform != null)
+        {
+            tempOneWayPlatform.GetComponent<EdgeCollider2D>().enabled = true;
+            canGroundSlam = originalCanGroundSlam;
+        }
     }
     #endregion
 }
