@@ -19,6 +19,10 @@ public class CharacterController2D : MonoBehaviour
     public bool above;
 
     public GroundType groundType;
+    public WallType leftWallType;
+    public WallType rightWallType;
+    public GroundType ceilingType;
+
     public bool hitGroundThisFrame;
     public bool hitWallThisFrame;
 
@@ -203,10 +207,13 @@ public class CharacterController2D : MonoBehaviour
 
         if (leftHit.collider)
         {
+            leftWallType = DeterminWallType(leftHit.collider);
             left = true;
         }
         else
         {
+            leftWallType = WallType.None;
+
             left = false;
         }
 
@@ -216,23 +223,28 @@ public class CharacterController2D : MonoBehaviour
 
         if (rightHit.collider)
         {
+            rightWallType = DeterminWallType(rightHit.collider);
+
             right = true;
         }
         else
         {
+            rightWallType = WallType.None;
             right = false;
         }
 
         //Check Above
-        RaycastHit2D abovehit = Physics2D.CapsuleCast(_capsuleCollider2d.bounds.center, _capsuleCollider2d.bounds.size, CapsuleDirection2D.Vertical,
+        RaycastHit2D aboveHit = Physics2D.CapsuleCast(_capsuleCollider2d.bounds.center, _capsuleCollider2d.bounds.size, CapsuleDirection2D.Vertical,
            0f, Vector2.up, raycastDistance, layerMask);
 
-        if (abovehit.collider)
+        if (aboveHit.collider)
         {
+            ceilingType = DetermineGroundType(aboveHit.collider);
             above = true;
         }
         else
         {
+            ceilingType = GroundType.None;
             above = false;
         }
     }
@@ -248,6 +260,19 @@ public class CharacterController2D : MonoBehaviour
         else
         {
             return GroundType.LevelGeometry;
+        }
+    }
+
+    private WallType DeterminWallType(Collider2D collider)
+    {
+        if (collider.GetComponent<WallEffector>())
+        {
+            WallEffector wallEffector = collider.GetComponent<WallEffector>();
+            return wallEffector.wallType;
+        }
+        else
+        {
+            return WallType.Normal;
         }
     }
 

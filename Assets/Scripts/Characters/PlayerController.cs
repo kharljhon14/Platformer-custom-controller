@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     public float dashTime = .2f;
     public float dashCooldownTime = 2f;
     public float groundSlamSpeed = 60f;
+    public float deadzoneValue = .15f;
 
     //Player abilities
     [Header("Player Abilities")]
@@ -76,7 +77,7 @@ public class PlayerController : MonoBehaviour
     private bool _ableToWallRun = true;
 
     private float _currentGlideTime;
-    private bool _startGlide;
+    private bool _startGlide = true;
 
     private float _powerJumpTimer;
 
@@ -100,6 +101,8 @@ public class PlayerController : MonoBehaviour
             _dashTimer -= Time.deltaTime;
         }
 
+        ApplyDeadzones();
+
         ProcessHorizotalMovement();
 
         if (_characterController.below) // On the ground
@@ -111,6 +114,19 @@ public class PlayerController : MonoBehaviour
             OnAir();
         }
         _characterController.Move(_moveDirections * Time.deltaTime);
+    }
+
+    private void ApplyDeadzones()
+    {
+        if(_input.x > -deadzoneValue && _input.x < deadzoneValue)
+        {
+            _input.x = 0f;
+        }
+
+        if (_input.y > -deadzoneValue && _input.y < deadzoneValue)
+        {
+            _input.y = 0f;
+        }
     }
 
     private void ProcessHorizotalMovement()
@@ -142,6 +158,10 @@ public class PlayerController : MonoBehaviour
                     _moveDirections.x = -dashSpeed;
                 }
                 _moveDirections.y = 0f;
+            }
+            else if(isCreeping == true)
+            {
+                _moveDirections.x *= creepSpeed;
             }
             else
             {
@@ -238,6 +258,7 @@ public class PlayerController : MonoBehaviour
         isWallSliding = false;
         _currentGlideTime = glideTime;
         isGroundSlamming = false;
+        _startGlide = true;
     }
 
     private void OnAir()

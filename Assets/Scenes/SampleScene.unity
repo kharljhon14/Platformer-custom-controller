@@ -2297,7 +2297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 8
-  creepSpeed: 6
+  creepSpeed: 3
   gravity: 50
   jumpSpeed: 15
   doubleJumpSpeed: 13
