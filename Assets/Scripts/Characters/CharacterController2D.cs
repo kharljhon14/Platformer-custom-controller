@@ -44,6 +44,9 @@ public class CharacterController2D : MonoBehaviour
     private bool _inAirLastFrame;
     private bool _noSideCollisionLastFrame;
 
+    private Transform _tempMovingPlatform;
+    private Vector2 _movingPlatformVelocity;
+
     private void Awake()
     {
         _rigidbody2d = GetComponent<Rigidbody2D>();
@@ -58,6 +61,7 @@ public class CharacterController2D : MonoBehaviour
 
         _lastPosition = _rigidbody2d.position;
 
+        // slope adjustment
         if (_slopeAngle != 0 && below == true)
         {
             if ((_moveAmount.x > 0f && _slopeAngle > 0f) || (_moveAmount.x < 0f && _slopeAngle < 0f))
@@ -65,6 +69,21 @@ public class CharacterController2D : MonoBehaviour
                 _moveAmount.y = -Math.Abs(Mathf.Tan(_slopeAngle * Mathf.Deg2Rad) * _moveAmount.x);
                 _moveAmount.y *= downForceMultiplier;
             }
+        }
+
+        // Moving platform adjustment
+
+        if(groundType == GroundType.MovingPlatform)
+        {
+            //Offset the player movement on the x with moving platform velocity
+            _moveAmount.x += MovingPlatformAdjust().x;
+
+            //If platform is moving down  offset the player's movement on the y
+            if(MovingPlatformAdjust().y < 0f)
+            {
+                _moveAmount.y += MovingPlatformAdjust().y;
+                _moveAmount.y *= downForceMultiplier;
+            }   
         }
 
         _currentPosition = _lastPosition + _moveAmount;
@@ -196,6 +215,11 @@ public class CharacterController2D : MonoBehaviour
         {
             groundType = GroundType.None;
             below = false;
+
+            if (_tempMovingPlatform)
+            {
+                _tempMovingPlatform = null;
+            }
         }
     }
 
@@ -254,6 +278,14 @@ public class CharacterController2D : MonoBehaviour
         if (collider.GetComponent<GroundEffector>())
         {
             GroundEffector groundEffector = collider.GetComponent<GroundEffector>();
+            
+            if(groundType == GroundType.MovingPlatform)
+            {
+                if (!_tempMovingPlatform)
+                {
+                    _tempMovingPlatform = collider.transform;
+                }
+            }
 
             return groundEffector.groundType;
         }
@@ -287,6 +319,20 @@ public class CharacterController2D : MonoBehaviour
     {
         yield return new WaitForSeconds(.1f);
         _disableGroundCheck = false;
+    }
+
+    private Vector2 MovingPlatformAdjust()
+    {
+        if(_tempMovingPlatform && groundType == GroundType.MovingPlatform) 
+        {
+            _movingPlatformVelocity = _tempMovingPlatform.GetComponent<MovingPlatform>().difference;
+
+            return _movingPlatformVelocity;
+        }
+        else
+        {
+            return Vector2.zero;
+        }
     }
 
     private void DrawDebugRays(Vector2 direction, Color color)
