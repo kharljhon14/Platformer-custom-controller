@@ -26,6 +26,9 @@ public class CharacterController2D : MonoBehaviour
     public bool hitGroundThisFrame;
     public bool hitWallThisFrame;
 
+    public float jumpPadAmount;
+    public float jumpPadUpperLimit;
+
     private Vector2 _moveAmount;
     private Vector2 _currentPosition;
     private Vector2 _lastPosition;
@@ -209,6 +212,13 @@ public class CharacterController2D : MonoBehaviour
             else
             {
                 below = true;
+            }
+
+            if(groundType == GroundType.JumpPad)
+            {
+                JumpPad jumpPad = hit.collider.GetComponent<JumpPad>();
+                jumpPadAmount = jumpPad.jumpPadAmount;
+                jumpPadUpperLimit = jumpPad.jumpPadUpperLimit;
             }
         }
         else

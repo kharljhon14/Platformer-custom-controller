@@ -83,6 +83,10 @@ public class PlayerController : MonoBehaviour
 
     private bool _facingRight;
     private float _dashTimer;
+
+    private float _jumpPadAmount = 15f;
+    private float _jumpPadAdjustment = 0f;
+    private Vector2 _tempVelocity;
     #endregion
 
     private void Start()
@@ -178,6 +182,18 @@ public class PlayerController : MonoBehaviour
         ClearAirAbilityFlags();
         Jump();
         DuckingAndCreeping();
+
+        JumpPad();
+    }
+
+    private void JumpPad()
+    {
+        if(_characterController.groundType == GroundType.JumpPad)
+        {
+            _jumpPadAmount = _characterController.jumpPadAmount;
+
+            _moveDirections.y = _jumpPadAmount;
+        }
     }
 
     private void DuckingAndCreeping()
